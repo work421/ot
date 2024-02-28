@@ -62,3 +62,72 @@ hold on
 p2 = scatter(f_points(1, :), f_points(2, :), 150, 'bo');
 
 fprintf('Max Value is: %d at (%d,%d) ', max, f_points(pt_i,1),  f_points(pt_i,2) );
+
+
+
+
+//
+A = [-1 3; 1 1;1 -1]
+B = [10;6;2]
+
+x1=0:max(B)
+x12=(B(1)-A(1,1)*x1)/A(1,2)
+x22 = (B(2)-A(2,1)*x1)/A(2,2)
+x32 =  (B(3)-A(3,1)*x1)/A(3,2)
+
+x12=max(0,x12)
+x22=max(0,x22)
+x32=max(0,x32)
+
+plot(x1,x12,'r',x1,x22,'b',x1,x32,'g')
+xlabel('x1')
+ylabel('x12,x22,x32')
+legend('x12','x22','x32')
+
+cx1 = find(x1==0)
+c1 = find(x12==0)
+line = [x1([cx1,c1]);x12([cx1,c1])]'
+c2=find(x22==0)
+line2 = [x1([cx1,c2]);x22([cx1,c2])]'
+c3=find(x32==0)
+line3 = [x1([cx1,c3]);x32([cx1,c3])]'
+
+vec = [line;line2;line3]
+
+sol=[0 0]
+for i = 1:size(A,1)
+    A1=A(i,:)
+    B1=B(i,:)
+    for j=i+1:size(A,1)
+        A2=A(j,:)
+        B2=B(j,:)
+        A3=[A1;A2]
+        B3=[B1;B2]
+        X=(A3\B3)'
+        sol = [sol; X]
+    end
+end                                                                                                                                              
+
+points = [sol;vec]
+for i =1:size(points,1)
+    const1(i) = A(1,1)*points(i,1)+A(1,2)*points(i,2)-B(1)
+    const2(i) = A(2,1)*points(i,1)+A(2,2)*points(i,2)-B(2)
+    const3(i) = A(3,1)*points(i,1)+A(3,2)*points(i,2)-B(3)
+end
+
+
+s1 = find(const1 > 0)
+s2 = find(const2 > 0)
+s3 = find(const3 > 0)
+
+S = [s1 , s2 , s3]
+
+points(S,:) = []
+
+c = [1 ,5]
+val = points * c'
+[optimal index] = max(val)
+
+optimal_point = points(index,:)
+
+fprintf('The optimal value is ',optimal,' at the index index ',index,' and the points are ',optimal_point)
