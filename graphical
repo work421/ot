@@ -1,1 +1,64 @@
+clc
+clear all
 
+c = [5, 3];
+b = [15; 10; 0; 0];
+A = [3, 5; 5, 2; 0,1; 1,0];
+
+x = 0: 0.01 : max(b);
+
+t1 = (b(1) - A(1,1)*x)/A(1,2);
+t2 = (b(2) - A(2,1)*x)/A(2,2);
+
+
+t1 = max(0, t1);
+t2 = max(0, t2);
+
+plot(x, t1, 'r', x, t2, 'g')
+
+solution = []
+
+for i = 1:length(A)
+    for j = i+1:length(A)
+        A1 = [A(i, :); A(j, :)];
+        b1 = [b(i, :); b(j, :)];
+        X = inv(A1)*b1;
+        if  (X(1,1) >= 0) &&  (X(2,1) >= 0)
+            solution = [solution, X];
+        end
+    end
+end
+
+solution = solution;
+hold on
+p1 = scatter(solution(1, :), solution(2, :), 'filled');
+
+max = 0;
+ pt_i = 0;
+ 
+ it = 1
+
+for i = 1:length(solution)
+    res = 1
+    pt = solution(:, i)
+    for j = 1:2
+        ta = A(j, :);
+        if ta*pt > b(j)
+            res = 0
+        end
+    end
+    if res == 1
+        f_points(:, it) = pt;
+        it = it+1;
+        val = c*pt
+        if val > max
+            max = val
+            pt_i = i
+        end
+    end
+end
+
+hold on
+p2 = scatter(f_points(1, :), f_points(2, :), 150, 'bo');
+
+fprintf('Max Value is: %d at (%d,%d) ', max, f_points(pt_i,1),  f_points(pt_i,2) );
